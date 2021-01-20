@@ -1,13 +1,13 @@
 {
-  "name": "phaser-project-template-es6",
+  "name": "it-s-a-joke-instant-game-template",
   "version": "1.0.0",
-  "description": "Phaser 3 starter template with ES6 and webpack.",
+  "description": "It's a joke instant game template",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --config webpack/webpack.dev.js",
     "build": "webpack --config webpack/webpack.prod.js",
-    "bundle": "npm run build",
-    "serve": "serve dist"
+    "serve": "serve dist",
+    "prettier": "prettier --write \"./src/**/*.js\""
   },
   "engines": {
     "node": ">=8.0.0"
@@ -21,6 +21,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "html-webpack-plugin": "^3.2.0",
+    "prettier": "^2.2.1",
     "serve": "^11.3.2",
     "typescript": "^3.9.6",
     "webpack": "^4.43.0",
