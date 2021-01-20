@@ -1,3 +1,6 @@
+const urlParams = new URLSearchParams(window.location.search)
+export const DEBUG = process.env.NODE_ENV === 'production' && !urlParams.get('debug') ? false : true
+
 export const WIDTH = window.innerWidth
 export const HEIGHT = window.innerHeight
 export const DESKTOP_SPEED =  180

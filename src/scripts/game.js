@@ -6,7 +6,11 @@ import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-p
 import MainScene from './scenes/mainScene'
 import PreloadScene from './scenes/preloadScene'
 
-import { WIDTH, HEIGHT } from './globalConfig'
+import { 
+  DEBUG, 
+  WIDTH, 
+  HEIGHT 
+} from './globalConfig'
 
 const config = {
   type: Phaser.AUTO,
@@ -25,7 +29,7 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: process.env.NODE_ENV === 'production' ? false : true
+      debug: DEBUG
     }
   },
   plugins: {
