@@ -1,9 +1,17 @@
 export const WIDTH = window.innerWidth
 export const HEIGHT = window.innerHeight
+export const DESKTOP_SPEED =  180
 export const SPEED_ADJUSTER = 3
 export const BG_SPEED = 1.2
 
-export const FONT_STYLE = { fontSize: '24px', fill: '#fff' }
+export const FONT_STYLE = { 
+    fontFamily: 'Arial, sans-serif',
+    fontSize: '24px', 
+    fill: '#fff'
+}
+
+export let IS_TOUCH= false
+window.addEventListener('touchstart', () => IS_TOUCH = true)
 
 export const relativeMeasure = (percentage, measure) => (measure / 100) * percentage
 

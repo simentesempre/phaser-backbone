@@ -1,4 +1,15 @@
-import { WIDTH, HEIGHT, SPEED_ADJUSTER, BG_SPEED, FONT_STYLE, relativeWidth, relativeHeight, randomIntBetween } from '../globalConfig'
+import { 
+  WIDTH, 
+  HEIGHT, 
+  SPEED_ADJUSTER, 
+  BG_SPEED, 
+  DESKTOP_SPEED, 
+  FONT_STYLE, 
+  IS_TOUCH, 
+  relativeWidth, 
+  relativeHeight, 
+  randomIntBetween 
+} from '../globalConfig'
 
 export default class MainScene extends Phaser.Scene {
   
@@ -8,28 +19,15 @@ export default class MainScene extends Phaser.Scene {
     this.shoot = false
     this.bulletTime = 0
     this.score = 0
-    this.scoreText
     this.bulletIntervals = []
   }
 
   create() {
-    this.background = this.add.tileSprite(0, 0, WIDTH*2, HEIGHT*2, 'sky')
-    this.joyStick = this.plugins.get('rexVirtualJoystick').add(this, {
-        x: relativeWidth(28), 
-        y: relativeHeight(82),
-        radius: 60
-        // dir: '8dir',
-        // forceMin: 16,
-        // fixed: true,
-        // enable: true
-    })
-
-    this.scoreText = this.add.text(relativeWidth(60), relativeHeight(3), 'Score: 0', FONT_STYLE);
-    this.gameOverText = this.add.text(relativeWidth(50), relativeHeight(48), 'Game Over', FONT_STYLE)
-    this.gameOverText.setOrigin(0.5)
+    this.background = this.add.tileSprite(relativeWidth(50), relativeHeight(50), WIDTH, HEIGHT, 'sky')
+    this.scoreText = this.add.text(relativeWidth(95), relativeHeight(5), 'SCORE: 0', FONT_STYLE).setOrigin(1)
+    this.gameOverText = this.add.text(relativeWidth(50), relativeHeight(48), 'GAME OVER', FONT_STYLE).setOrigin(0.5)
     this.gameOverText.alpha = 0
-
-    this.restartButton = this.add.text(relativeWidth(50), relativeHeight(52), 'Restart!', FONT_STYLE).setInteractive().setOrigin(0.5)
+    this.restartButton = this.add.text(relativeWidth(50), relativeHeight(52), '> RESTART <', FONT_STYLE).setInteractive().setOrigin(0.5)
     this.restartButton.alpha = 0
     this.restartButton.on('pointerdown', () => {
       this.scene.restart()
@@ -37,8 +35,7 @@ export default class MainScene extends Phaser.Scene {
       this.bulletIntervals = []
     })
     
-    this.player = this.physics.add.sprite(relativeWidth(50), relativeHeight(70), 'ship')
-    this.player.setCollideWorldBounds(true)
+    this.player = this.physics.add.sprite(relativeWidth(50), relativeHeight(70), 'ship').setCollideWorldBounds(true)
     this.player.scale = 0.16
 
     this.bullets = this.physics.add.group()
@@ -48,35 +45,61 @@ export default class MainScene extends Phaser.Scene {
     this.physics.add.collider(this.ships, this.bullets, this.hitShip, null, this)
     this.physics.add.collider(this.player, this.enemyBullets, this.hitPlayer, null, this)
     this.physics.add.collider(this.player, this.ships, this.hitPlayer, null, this)
-
-    /* this.createMovementButton(25, 79, 0.4, 'u') 
-    this.createMovementButton(34.5, 80, 0.4, 'ur')
-    this.createMovementButton(25, 91, 0.4, 'd')
-    this.createMovementButton(34.5, 90, 0.4, 'dr')
-    this.createMovementButton(12, 85, 0.4, 'l')
-    this.createMovementButton(15.5, 90, 0.4, 'dl')
-    this.createMovementButton(38, 85, 0.4, 'r') 
-    this.createMovementButton(15.5, 80, 0.4, 'ul') */
-
-    this.fireButton = this.physics.add.sprite(relativeWidth(80), relativeHeight(85), 'button')  
-    this.fireButton.setInteractive()
-    this.fireButton.scale = 0.8
-    this.fireButton.alpha = 0.5
-    this.fireButton.on('pointerover', f => {
-      this.shoot = true
-      this.fireButton.alpha = 1
-    })  
-    this.fireButton.on('pointerout', f => {
-      this.shoot = false
+    if(IS_TOUCH) {
+      this.joyStick = this.plugins.get('rexVirtualJoystick').add(this, {
+          x: relativeWidth(28), 
+          y: relativeHeight(82),
+          radius: 60
+          // dir: '8dir',
+          // forceMin: 16,
+          // fixed: true,
+          // enable: true
+      })    
+      this.fireButton = this.physics.add.sprite(relativeWidth(80), relativeHeight(85), 'button')  
+      this.fireButton.setInteractive()
+      this.fireButton.scale = 0.8
       this.fireButton.alpha = 0.5
-    })     
-  }
+      this.fireButton.on('pointerover', f => {
+        this.shoot = true
+        this.fireButton.alpha = 1
+      })  
+      this.fireButton.on('pointerout', f => {
+        this.shoot = false
+        this.fireButton.alpha = 0.5
+      }) 
+    } else {
+      this.keys = this.input.keyboard.createCursorKeys()
+      //creates keyboard interactions
+    }
+  } 
 
   update() {
     this.background.tilePositionY -= BG_SPEED
-    const {forceX, forceY} = this.joyStick
-    this.setPlayerVelocity(forceX*SPEED_ADJUSTER, forceY*SPEED_ADJUSTER)
-    if(randomIntBetween(1, 80) === 1) this.createShip()
+    if(IS_TOUCH) {
+      const {forceX, forceY} = this.joyStick
+      this.setPlayerVelocity(forceX*SPEED_ADJUSTER, forceY*SPEED_ADJUSTER)
+    } else {
+      if (this.keys.left.isDown) {
+        this.setXPlayerVelocity(-DESKTOP_SPEED)
+      } else if (this.keys.right.isDown) {
+        this.setXPlayerVelocity(DESKTOP_SPEED)
+      } else {
+        this.setXPlayerVelocity(0)
+      }
+      if (this.keys.up.isDown) {
+        this.setYPlayerVelocity(-DESKTOP_SPEED)
+      } else if (this.keys.down.isDown) {
+        this.setYPlayerVelocity(DESKTOP_SPEED)
+      } else {
+        this.setYPlayerVelocity(0)
+      }
+      if(this.keys.space.isDown){
+        this.shoot = true
+      } else {
+        this.shoot = false
+      }
+    }
+    
     /* switch(this.movePlayer) {
       case 'u':
         this.setPlayerVelocity(0, -SPEED)
@@ -105,6 +128,9 @@ export default class MainScene extends Phaser.Scene {
       default: 
         this.setPlayerVelocity(0, 0)
     } */
+    if(randomIntBetween(1, 80) === 1) {
+      this.createShip()
+    }
     if(this.shoot) { 
       if(this.bulletTime + 200 < this.time.now) {
         this.bulletTime = this.time.now
@@ -117,36 +143,36 @@ export default class MainScene extends Phaser.Scene {
       }
     })
     this.enemyBullets.children.entries.forEach(bullet => {
-      if(bullet.y > relativeHeight(70)) {
+      if(bullet.y > relativeHeight(IS_TOUCH ? 70 : 100)) {
         this.destroyBullet(bullet)
       }
     })
     this.ships.children.entries.forEach(ship => {
-      if(ship.y > relativeHeight(70)) {
+      if(ship.y > relativeHeight(IS_TOUCH ? 70 : 100)) {
         this.destroyShip(ship)
       }
     })
   }
 
-  createMovementButton(posX, posY, scale, direction) {
-    const button = this.physics.add.sprite(relativeWidth(posX), relativeHeight(posY), 'button').setInteractive()  
-    button.scale = scale
-    button.alpha = 0.5
-    this.rightButton
-    button.on('pointerover', e => {
-      this.movePlayer = direction
-      button.alpha = 1
-    })
-    button.on('pointerout', f => {
-      this.movePlayer = 'stand'
-      button.alpha = 0.5
-    })
+  setPlayerVelocity(xSpeed, ySpeed) {
+    this.setXPlayerVelocity(xSpeed)
+    this.setYPlayerVelocity(ySpeed)
   }
 
-  setPlayerVelocity(xSpeed, ySpeed) {
-    this.player.setVelocityX(xSpeed)
-    if(this.player.y <= relativeHeight(70) || (this.player.y > relativeHeight(70) && ySpeed < 0)) {
-      this.player.setVelocityY(ySpeed)
+  setXPlayerVelocity(speed) {
+    this.player.setVelocityX(speed)
+  }
+  
+  setYPlayerVelocity(speed) {
+    if(
+      !IS_TOUCH || 
+      this.player.y <= relativeHeight(70) || 
+      (
+        this.player.y > relativeHeight(70) && 
+        speed < 0
+      )
+    ) {
+      this.player.setVelocityY(speed)
     } else {
       this.player.setVelocityY(0)
     }
@@ -178,7 +204,7 @@ export default class MainScene extends Phaser.Scene {
     this.destroyBullet(bullet)
     this.destroyShip(ship)
     this.score += 10
-    this.scoreText.setText('Score: ' + this.score)
+    this.scoreText.setText('SCORE: ' + this.score)
   }
 
   hitPlayer (player, bullet) {

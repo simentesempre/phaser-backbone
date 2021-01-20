@@ -12,8 +12,8 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('sky', '../../assets/img/bg.jpg')
   }
   create() {
-    this.background = this.add.tileSprite(0, 0, WIDTH*2, HEIGHT*2, 'sky')
-    this.startButton = this.add.text(relativeWidth(50), relativeHeight(50), 'Start!', FONT_STYLE).setInteractive().setOrigin(0.5)
+    this.background = this.add.tileSprite(relativeWidth(50), relativeHeight(50), WIDTH, HEIGHT, 'sky')
+    this.startButton = this.add.text(relativeWidth(50), relativeHeight(50), '> START <', FONT_STYLE).setInteractive().setOrigin(0.5)
     this.startButton.on('pointerdown', () => {
       this.scene.start('MainScene')
     })
